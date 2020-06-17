@@ -27,7 +27,6 @@ export default function App() {
       //           lng: position.coords.longitude,
       //   })
       // })
-     
       
   },[])
   const [complementos, setComplementos] = useState({
