@@ -57,7 +57,6 @@ export default function App() {
           axios.get(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${coordinates.lat},${coordinates.lng}&key=${API_KEY}`)
                .then((res)=>{
                 const arrayResults = res.data.results[0].address_components
-                console.log(arrayResults)
                 setComplementos({
                   numero: arrayResults[0].long_name,
                   rua:arrayResults[1].long_name,
@@ -79,8 +78,6 @@ export default function App() {
     const results = await geocodeByAddress(value);
     const latLng = await getLatLng(results[0]);
     const abvResults = results[0].address_components;
-    console.log(abvResults[0])
-    console.log('results', results[0].address_components)
 
     setAddress(value);
 
