@@ -47,10 +47,12 @@ export default function App() {
       <Marker
         draggable={true}
         onDragEnd={(e) => {
-          const latlong = e.latLng
+          const latlong = e.latLng,
+                lat = latlong.lat(),
+                lng = latlong.lng();
           setCoordinates({
-            lat: latlong.lat(),
-            lng: latlong.lng(),
+            lat,
+            lng
           })
           axios.get(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${coordinates.lat},${coordinates.lng}&key=${API_KEY}`)
                .then((res)=>{
