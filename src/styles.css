@@ -1,0 +1,28 @@
+.conteudo-center{
+  box-sizing: border-box;
+  padding: 10% 10%;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+.auto-Complete{
+  border-top: 1px solid #999;
+  box-sizing: border-box;
+  padding: 20px 0;
+}
+.conteudo-center h1{
+  margin-bottom: 10px;
+  font-size: 20px;
+  color: #999;
+}
+.AutoCompleteInput{
+    box-sizing: border-box;
+    padding: 0 10px;
+    margin: 10px 0;
+    height: 50px;
+    width: 100%;
+    border: 1px solid #999;
+    border-radius: 4px;
+    font-size: 15 px;
+}

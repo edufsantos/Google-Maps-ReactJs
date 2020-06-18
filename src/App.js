@@ -1,18 +1,34 @@
-import React,{useState, useEffect} from "react";
+import React,{useState, useEffect} from "react"
 import axios from 'axios'
 import PlacesAutocomplete, {
   geocodeByAddress,
   getLatLng,
 } from "react-places-autocomplete";
+import { TextField } from '@material-ui/core';
 
 import {
   withGoogleMap,
   GoogleMap,
   Marker,
-} from "react-google-maps";
+} from "react-google-maps"
+import './styles.css'
+import { makeStyles } from '@material-ui/core/styles';
+
+
+const useStyles = makeStyles((theme) => ({
+  inputs: {
+    margin: '10px 0',
+    height: '50px',
+    width: '100%'
+  },
+}));
+
+
+
 
 
 export default function App() {
+  const classes = useStyles();
   const [address, setAddress] = useState("");
   const [coordinates, setCoordinates] = useState({
     lat: -20.4997288,
@@ -93,53 +109,54 @@ export default function App() {
   };
 
   return (
-    <div>
-      <MapWithAMarker
-          containerElement={<div style={{ height: `400px` }} />}
-          mapElement={<div style={{ height: `100%` }} />}
-        />
-
-          <div className="auto-Complete">
-          <PlacesAutocomplete
-            value={address}
-            onChange={setAddress}
-            onSelect={handleSelect}
-          >
-            {({ getInputProps, suggestions, getSuggestionItemProps, loading }) => (
-              <div>
-                <p>Latitude: {coordinates.lat}</p>
-                <p>Longitude: {coordinates.lng}</p>
-                <p>rua: {complementos.rua}</p>
-                <p>bairro: {complementos.bairro}</p> 
-                <p>numero: {complementos.numero}</p> 
-                <p>cidade: {complementos.cidade}</p> 
-                <p>estado: {complementos.estado}</p> 
-                <p>cep: {complementos.cep}</p>   
-
-                
-                        
-            <input {...getInputProps({ placeholder: "Type address" })} />
-
-                <div style={{width: '500px'}}>
-                  {loading ? <div>...loading</div> : null}
-
-                  {suggestions.map(suggestion => {
-                    const style = {
-                      backgroundColor: suggestion.active ? "#41b6e6" : "#fff"
-                    };
-
-                    return (
-                      <div {...getSuggestionItemProps(suggestion, { style })}>
-                        {suggestion.description}
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-          </PlacesAutocomplete>
-          </div>
-        
+    <div className="conteudo-center">
+          <h1>CADASTRO GESTOR FOOD</h1>
+          <div className="auto-Complete"> 
+            <form action="">
+              <TextField className={classes.inputs} id="outlined-basic" label="Nome" variant="outlined" />
+              <TextField className={classes.inputs} type="date" id="outlined-date"  variant="outlined" />
+              <TextField className={classes.inputs}id="outlined-basic" label="Sexo" variant="outlined" />
+              <TextField className={classes.inputs}id="outlined-basic" label="CPF" variant="outlined" />
+              <TextField className={classes.inputs} id="outlined-basic" type="Email" label="E-Mail" variant="outlined" />
+     
+              <PlacesAutocomplete
+                value={address}
+                onChange={setAddress}
+                onSelect={handleSelect}
+                >
+                {({ getInputProps, suggestions, getSuggestionItemProps, loading }) => (
+                  <div className="">
+                    {/* input seguido de uma div com as sugestões */}
+                    <input className="AutoCompleteInput" {...getInputProps({ placeholder: "Informe seu endereço..." })} />
+                      <div style={{width: '100%'}}>
+                        {loading ? <div>...Carregando</div> : null}
+                        {suggestions.map(suggestion => {
+                          const style = {
+                            position: 'fixed',
+                            zIndex: '1000',
+                            boxSizing: 'border-box',
+                            padding: '5px',
+                            width: '300px',
+                            maxWidth: '300px',
+                            border: '1px solid #333',
+                            backgroundColor: suggestion.active ? "#41b6e6" : "#fff"
+                          };
+                          return (
+                            <div {...getSuggestionItemProps(suggestion, { style })}>
+                              {suggestion.description}
+                            </div>
+                          );
+                        })}
+                      </div>                    
+                     </div>
+                    )}
+                </PlacesAutocomplete>
+            </form> 
+            </div>
+            <MapWithAMarker
+              containerElement={<div style={{ position: 'relative', height: `400px` }} />}
+              mapElement={<div style={{ position: 'relative',  height: `100%`, width: '100%' }} />}
+            />
     </div>
   );
 }
