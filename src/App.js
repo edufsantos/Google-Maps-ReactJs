@@ -19,6 +19,7 @@ const useStyles = makeStyles((theme) => ({
     width: '35%',
   },
   inputs1:{
+    height: '50px',
     width: '60%',
   }
 }));
@@ -111,12 +112,12 @@ export default function App() {
             <form action="">
               <TextField className={classes.inputs} id="outlined-basic" label="Nome" variant="outlined" />
               <div className="data-sexo">
-                <TextField className={classes.inputs1} type="date" id="outlined-date"  variant="outlined" />
+                <TextField className={classes.inputs1} type="date" id="outlined-date" defaultValue="00/00/0000" variant="outlined" />
                 <TextField
                   className={classes.inputs2} 
                   id="outlined-select-currency"
                   select
-                  label="Select"
+                  label="selecione"
                   value={currency}
                   onChange={(e) => {
                     setCurrency(e.target.value);
