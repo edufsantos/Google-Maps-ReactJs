@@ -9,8 +9,6 @@ import {
 } from "react-google-maps"
 import './styles.css'
 import { makeStyles } from '@material-ui/core/styles';
-
-
 const useStyles = makeStyles((theme) => ({
   inputs: {
     margin: '10px 0',
@@ -84,8 +82,6 @@ export default function App() {
       />
     </GoogleMap>
   );
-
-
   // const handleSelect = async value => {
   //   const results = await geocodeByAddress(value);
   //   console.log('value', value)
@@ -110,8 +106,7 @@ export default function App() {
  
   return (
     <div className="conteudo-center">
-          <h1>CADASTRO GESTOR FOOD</h1>
-          
+          <h1>CADASTRO GESTOR FOOD</h1>    
           <div className="auto-Complete"> 
             <form action="">
               <TextField className={classes.inputs} id="outlined-basic" label="Nome" variant="outlined" />
@@ -138,8 +133,10 @@ export default function App() {
              
               <TextField className={classes.inputs}id="outlined-basic" label="CPF" variant="outlined" />
               <TextField className={classes.inputs} id="outlined-basic" type="Email" label="E-Mail" variant="outlined" />
-              <TextField className={classes.inputs} id="outlined-basic" type="text" label="Rua" value={complementos.rua === null ?  '' : complementos.rua  } variant="outlined" />
-              <TextField className={classes.inputs} id="outlined-basic" type="text" label="Número" value={complementos.numero === null ?  '' : complementos.numero  } variant="outlined" />
+              <div className="data-sexo">
+                <TextField className={classes.inputs1} id="outlined-basic" type="text" label="Rua" value={complementos.rua === null ?  '' : complementos.rua  } variant="outlined" />
+                <TextField className={classes.inputs2} id="outlined-basic" type="text" label="Número" value={complementos.numero === null ?  '' : complementos.numero  } variant="outlined" />
+              </div>
               <TextField className={classes.inputs} id="outlined-basic" type="text" label="Bairro" value={complementos.bairro === null ?  '' : complementos.bairro  } variant="outlined" />
              
               <AutoComplete
