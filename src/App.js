@@ -113,6 +113,7 @@ export default function App() {
           <h1>CADASTRO GESTOR FOOD</h1>
           <div className="auto-Complete"> 
             <form action="">
+              <p>{complementos.rua}</p>
               <TextField className={classes.inputs} id="outlined-basic" label="Nome" variant="outlined" />
               <TextField className={classes.inputs} type="date" id="outlined-date"  variant="outlined" />
               <TextField className={classes.inputs}id="outlined-basic" label="Sexo" variant="outlined" />
