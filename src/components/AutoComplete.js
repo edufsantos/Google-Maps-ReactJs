@@ -7,18 +7,7 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import parse from 'autosuggest-highlight/parse';
 import throttle from 'lodash/throttle';
-
-function loadScript(src, position, id) {
-  if (!position) {
-    return;
-  }
-
-  const script = document.createElement('script');
-  script.setAttribute('async', '');
-  script.setAttribute('id', id);
-  script.src = src;
-  position.appendChild(script);
-}
+import  { getLatLng, geocodeByAddress} from "react-places-autocomplete";
 
 const autocompleteService = { current: null };
 
@@ -27,27 +16,19 @@ const useStyles = makeStyles((theme) => ({
     color: theme.palette.text.secondary,
     marginRight: theme.spacing(2),
   },
+  inputs: {
+    margin: '10px 0',
+    height: '50px',
+    width: '100%',
+  },
 }));
 
-export default function GoogleMaps() {
+
+export default function GoogleMaps({setCoordinates, setComplementos}) {
   const classes = useStyles();
   const [value, setValue] = React.useState(null);
   const [inputValue, setInputValue] = React.useState('');
   const [options, setOptions] = React.useState([]);
-  const loaded = React.useRef(false);
-
-  if (typeof window !== 'undefined' && !loaded.current) {
-    if (!document.querySelector('#google-maps')) {
-      loadScript(
-        'https://maps.googleapis.com/maps/api/js?key=AIzaSyBwRp1e12ec1vOTtGiA4fcCt2sCUS78UYc&libraries=places',
-        document.querySelector('head'),
-        'google-maps',
-      );
-    }
-
-    loaded.current = true;
-  }
-
   const fetch = React.useMemo(
     () =>
       throttle((request, callback) => {
@@ -58,19 +39,16 @@ export default function GoogleMaps() {
 
   React.useEffect(() => {
     let active = true;
-
     if (!autocompleteService.current && window.google) {
       autocompleteService.current = new window.google.maps.places.AutocompleteService();
     }
     if (!autocompleteService.current) {
       return undefined;
     }
-
     if (inputValue === '') {
       setOptions(value ? [value] : []);
       return undefined;
     }
-
     fetch({ input: inputValue }, (results) => {
       if (active) {
         let newOptions = [];
@@ -95,7 +73,6 @@ export default function GoogleMaps() {
   return (
     <Autocomplete
       id="google-map-demo"
-      style={{ width: 300 }}
       getOptionLabel={(option) => (typeof option === 'string' ? option : option.description)}
       filterOptions={(x) => x}
       options={options}
@@ -103,7 +80,23 @@ export default function GoogleMaps() {
       includeInputInList
       filterSelectedOptions
       value={value}
-      onChange={(event, newValue) => {
+      onChange={ async (event, newValue) => {
+        const value = await geocodeByAddress(newValue ? newValue.description : '')
+        const latLng = await getLatLng(value[0])
+        await setCoordinates(latLng)
+
+
+        const addressComponent = value[0].address_components;
+        console.log(addressComponent)     
+        
+        setComplementos({
+          numero: addressComponent[0].long_name,
+          rua:addressComponent[1].long_name,
+          bairro: addressComponent[2].long_name,
+          cidade:  addressComponent[3].long_name,
+          estado: addressComponent[4].long_name,
+          cep: addressComponent[6] ? addressComponent[6].long_name : null
+        })
         setOptions(newValue ? [newValue, ...options] : options);
         setValue(newValue);
       }}
@@ -111,10 +104,11 @@ export default function GoogleMaps() {
         setInputValue(newInputValue);
       }}
       renderInput={(params) => (
-        <TextField {...params} label="Add a location" variant="outlined" fullWidth />
+        <TextField className={classes.inputs} {...params} label="Informe seu endereço" variant="outlined" fullWidth />
       )}
       renderOption={(option) => {
         const matches = option.structured_formatting.main_text_matched_substrings;
+
         const parts = parse(
           option.structured_formatting.main_text,
           matches.map((match) => [match.offset, match.offset + match.length]),
@@ -142,3 +136,14 @@ export default function GoogleMaps() {
     />
   );
 }
+
+
+
+
+
+
+
+
+
+
+
