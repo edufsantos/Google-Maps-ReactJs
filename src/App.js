@@ -59,12 +59,34 @@ export default function App() {
       .replace(/(-\d{2})\d+?$/, '$1') // captura 2 numeros seguidos de um traço e não deixa ser digitado mais nada
   }
   function handleChange(e){
-    console.log(e.target.value)
       setCpf(cpfMask(e.target.value))
   }
+  function handleDragCoords(e){
+    const latlong =  e.latLng;
+    const lat =   latlong.lat();
+    const lng =  latlong.lng();
+
+    setCoordinates({
+      lat,
+      lng
+    });
+
+    axios.get(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${API_KEY}`)
+         .then((res)=>{
+          const arrayResults = res.data.results[0].address_components
+          setComplementos({
+            numero: arrayResults[0].long_name,
+            rua:arrayResults[1].long_name,
+            bairro: arrayResults[2].long_name,
+            cidade:  arrayResults[3].long_name,
+            estado: arrayResults[4].long_name,
+            cep: arrayResults[6] ? arrayResults[6].long_name : null
+          })
+    })
+  }
+
   const MapWithAMarker = withGoogleMap(props =>
-    <GoogleMap
-       
+    <GoogleMap 
         defaultOptions={{ 
           mapTypeControl: false,
           zoomControl: true,
@@ -74,40 +96,19 @@ export default function App() {
           streetViewControl: false,
         }}
       defaultZoom={17}
-      defaultCenter={{ lat:coordinates.lat, lng: coordinates.lng }}
+        defaultCenter={{ lat:coordinates.lat, lng: coordinates.lng }}
     >
       <Marker
         draggable={true}
-        onDragEnd={async (e) => {
-          const latlong =  e.latLng;
-          const lat =   latlong.lat(),
-                lng =  latlong.lng();
-          await setCoordinates({
-            lat,
-            lng
-          })
-          axios.get(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${coordinates.lat},${coordinates.lng}&key=${API_KEY}`)
-               .then((res)=>{
-                const arrayResults = res.data.results[0].address_components
-                setComplementos({
-                  numero: arrayResults[0].long_name,
-                  rua:arrayResults[1].long_name,
-                  bairro: arrayResults[2].long_name,
-                  cidade:  arrayResults[3].long_name,
-                  estado: arrayResults[4].long_name,
-                  cep: arrayResults[6] ? arrayResults[6].long_name : null
-                })
-          })
-          
-        }}
-        position={{ lat:coordinates.lat, lng: coordinates.lng }}
+        onDragEnd={handleDragCoords}
+        position={coordinates}
       />
     </GoogleMap>
   );
- 
   return (
     <div className="conteudo-center">
-          <h1>CADASTRO GESTOR FOOD</h1>    
+          <h1>CADASTRO GESTOR FOOD</h1>   
+
           <div className="auto-Complete"> 
             <form action="">
               <TextField className={classes.inputs} id="outlined-basic" label="Nome" variant="outlined" />
@@ -144,38 +145,6 @@ export default function App() {
                 setComplementos={setComplementos}
                 setCoordinates={setCoordinates}
               />
-              {/* <PlacesAutocomplete
-                value={address}
-                onChange={setAddress}
-                onSelect={handleSelect}
-                >
-                {({ getInputProps, suggestions, getSuggestionItemProps, loading }) => (
-                  <div className="">
-                
-                    <input className="AutoCompleteInput" {...getInputProps({ placeholder: "Informe seu endereço..." })} />
-                      <div style={{width: '100%'}}>
-                        {loading ? <div>...Carregando</div> : null}
-                        {suggestions.map(suggestion => {
-                          const style = {
-                            position: 'relative',
-                            zIndex: '1000',
-                            boxSizing: 'border-box',
-                            padding: '5px',
-                            width: '300px',
-                            maxWidth: '300px',
-                            border: '1px solid #333',
-                            backgroundColor: suggestion.active ? "#41b6e6" : "#fff"
-                          };
-                          return (
-                            <div {...getSuggestionItemProps(suggestion, { style })}>
-                              {suggestion.description}
-                            </div>
-                          );
-                        })}
-                      </div>                    
-                     </div>
-                    )}
-                </PlacesAutocomplete> */}
             </form> 
             </div>
             <MapWithAMarker
