@@ -46,14 +46,35 @@ export default function App() {
     cidade:  '',
     estado: '',
     cep: null
-  })
+  });
+  const [cpf, setCpf] = useState('')
   const API_KEY = 'AIzaSyDnbHQ_2Q9POiAFe6k6D0iW3XiNicNNvdE'
-  
+
+  function cpfMask(value){
+    return value
+      .replace(/\D/g, '') // substitui qualquer caracter que nao seja numero por nada
+      .replace(/(\d{3})(\d)/, '$1.$2') // captura 2 grupos de numero o primeiro de 3 e o segundo de 1, apos capturar o primeiro grupo ele adiciona um ponto antes do segundo grupo de numero
+      .replace(/(\d{3})(\d)/, '$1.$2')
+      .replace(/(\d{3})(\d{1,2})/, '$1-$2')
+      .replace(/(-\d{2})\d+?$/, '$1') // captura 2 numeros seguidos de um traço e não deixa ser digitado mais nada
+  }
+  function handleChange(e){
+    console.log(e.target.value)
+      setCpf(cpfMask(e.target.value))
+  }
   const MapWithAMarker = withGoogleMap(props =>
     <GoogleMap
+       
+        defaultOptions={{ 
+          mapTypeControl: false,
+          zoomControl: true,
+          draggableCursor: 'default',
+          draggingCursor: 'move',
+          scrollwheel: false,
+          streetViewControl: false,
+        }}
       defaultZoom={17}
       defaultCenter={{ lat:coordinates.lat, lng: coordinates.lng }}
-      
     >
       <Marker
         draggable={true}
@@ -83,27 +104,6 @@ export default function App() {
       />
     </GoogleMap>
   );
-  // const handleSelect = async value => {
-  //   const results = await geocodeByAddress(value);
-  //   console.log('value', value)
-  //   console.log('results', results)
-
-  //   const latLng = await getLatLng(results[0]);
-
-  //   const abvResults = results[0].address_components;
-
-  //   setAddress(value);
-
-  //   setComplementos({
-  //     numero: abvResults[0].long_name,
-  //     rua:abvResults[1].long_name,
-  //     bairro: abvResults[2].long_name,
-  //     cidade:  abvResults[3].long_name,
-  //     estado: abvResults[4].long_name,
-  //     cep: abvResults[6] ? abvResults[6].long_name : null
-  //   })
-  //   setCoordinates(latLng);
-  // };
  
   return (
     <div className="conteudo-center">
@@ -132,13 +132,13 @@ export default function App() {
                 </TextField>
               </div>
              
-              <TextField className={classes.inputs}id="outlined-basic" label="CPF" variant="outlined" />
+              <TextField className={classes.inputs}id="outlined-basic" label="CPF" onChange={handleChange} value={cpf}variant="outlined" />
               <TextField className={classes.inputs} id="outlined-basic" type="Email" label="E-Mail" variant="outlined" />
               <div className="data-sexo">
                 <TextField className={classes.inputs1} id="outlined-basic" type="text" label="Rua" value={complementos.rua === null ?  '' : complementos.rua  } variant="outlined" />
                 <TextField className={classes.inputs2} id="outlined-basic" type="text" label="Número" value={complementos.numero === null ?  '' : complementos.numero  } variant="outlined" />
               </div>
-              <TextField className={classes.inputs} id="outlined-basic" type="text" label="Bairro" value={complementos.bairro === null ?  '' : complementos.bairro  } variant="outlined" />
+              <TextField className={classes.inputs} id="outlined-basic" type="text" label="Bairro" value={complementos.bairro === null ?  null : complementos.bairro  } variant="outlined" />
              
               <AutoComplete
                 setComplementos={setComplementos}

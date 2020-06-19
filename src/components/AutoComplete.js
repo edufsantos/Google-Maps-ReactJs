@@ -84,11 +84,7 @@ export default function GoogleMaps({setCoordinates, setComplementos}) {
         const value = await geocodeByAddress(newValue ? newValue.description : '')
         const latLng = await getLatLng(value[0])
         await setCoordinates(latLng)
-
-
         const addressComponent = value[0].address_components;
-        console.log(addressComponent)     
-        
         setComplementos({
           numero: addressComponent[0].long_name,
           rua:addressComponent[1].long_name,
@@ -101,7 +97,7 @@ export default function GoogleMaps({setCoordinates, setComplementos}) {
         setValue(newValue);
       }}
       onInputChange={(event, newInputValue) => {
-        setInputValue(newInputValue);
+        setInputValue(newInputValue ? newInputValue : null);
       }}
       renderInput={(params) => (
         <TextField className={classes.inputs} {...params} label="Informe seu endereço" variant="outlined" fullWidth />
