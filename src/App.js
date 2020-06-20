@@ -182,7 +182,7 @@ export default function App() {
           { isOpen && 
             <div className="AddressFormated" >
               <FaMapMarkerAlt size={20} color="red" style={{marginRight: '5px'}}/>
-              <h1>{formattedAddress}</h1> 
+              <h1>{formattedAddress}</h1>  
             </div>
           } 
             <MapWithAMarker
