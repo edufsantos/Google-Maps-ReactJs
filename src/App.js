@@ -6,7 +6,6 @@ import {
   withGoogleMap,
   GoogleMap,
   Marker,
-  InfoWindow,
 } from "react-google-maps"
 import {  FaMapMarkerAlt } from 'react-icons/fa';
 
@@ -47,14 +46,14 @@ export default function App() {
   });
   const [formattedAddress,setFormattedAddress] = useState('')
   const [currency, setCurrency] = React.useState('Selecione');
-  const [complementos, setComplementos] = useState({
-    numero: null,
-    rua: '',
-    bairro: '',
-    cidade:  '',
-    estado: '',
-    cep: null
-  });
+  // const [complementos, setComplementos] = useState({
+  //   numero: null,
+  //   rua: '',
+  //   bairro: '',
+  //   cidade:  '',
+  //   estado: '',
+  //   cep: null
+  // });
   const [cpf, setCpf] = useState('')
   const  [isOpen,setIsOpen] = useState(true)
   const API_KEY = 'AIzaSyDnbHQ_2Q9POiAFe6k6D0iW3XiNicNNvdE'
@@ -83,20 +82,20 @@ export default function App() {
     axios.get(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${API_KEY}`)
          .then((res)=>{
           setFormattedAddress(res.data.results[0].formatted_address)
-          const arrayResults = res.data.results[0].address_components
-          setComplementos({
-            numero: arrayResults[0].long_name,
-            rua:arrayResults[1].long_name,
-            bairro: arrayResults[2].long_name,
-            cidade:  arrayResults[3].long_name,
-            estado: arrayResults[4].long_name,
-            cep: arrayResults[6] ? arrayResults[6].long_name : null
-          })
+          // const arrayResults = res.data.results[0].address_components
+          // setComplementos({
+          //   numero: arrayResults[0].long_name,
+          //   rua:arrayResults[1].long_name,
+          //   bairro: arrayResults[2].long_name,
+          //   cidade:  arrayResults[3].long_name,
+          //   estado: arrayResults[4].long_name,
+          //   cep: arrayResults[6] ? arrayResults[6].long_name : null
+          // })
     })
   }
-  function handleOpen(){
-    setIsOpen(false)
-  }
+  // function handleOpen(){
+  //   setIsOpen(false)
+  // }
   useEffect(() => {
     if(formattedAddress === ''){
       setIsOpen(false)
@@ -139,9 +138,7 @@ export default function App() {
 
     </GoogleMap>
   );
-  const styleMAp = {
 
-  }
   return (
     <div className="conteudo-center">
           <h1>CADASTRO GESTOR FOOD</h1>   
@@ -174,7 +171,7 @@ export default function App() {
               <TextField className={classes.inputs} id="outlined-basic" type="Email" label="E-Mail" variant="outlined" />
               <AutoComplete
                 setFormattedAddress={setFormattedAddress}
-                setComplementos={setComplementos}
+                // setComplementos={setComplementos}
                 setCoordinates={setCoordinates}
               />
             </form> 
@@ -182,7 +179,7 @@ export default function App() {
           { isOpen && 
             <div className="AddressFormated" >
               <FaMapMarkerAlt size={20} color="red" style={{marginRight: '5px'}}/>
-              <h1>{formattedAddress}</h1>  
+              <h1>{formattedAddress}</h1> 
             </div>
           } 
             <MapWithAMarker

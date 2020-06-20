@@ -85,16 +85,16 @@ export default function GoogleMaps({setCoordinates, setComplementos,setFormatted
         const value = await geocodeByAddress(newValue ? newValue.description : '')
         const latLng = await getLatLng(value[0])
         await setCoordinates(latLng)
-        const addressComponent = value[0].address_components;
+        // const addressComponent = value[0].address_components;
         setFormattedAddress(newValue ? newValue.description : '');
-        setComplementos({
-          numero: addressComponent[0].long_name,
-          rua:addressComponent[1].long_name,
-          bairro: addressComponent[2].long_name,
-          cidade:  addressComponent[3].long_name,
-          estado: addressComponent[4].long_name,
-          cep: addressComponent[6] ? addressComponent[6].long_name : null
-        })
+        // setComplementos({
+        //   numero: addressComponent[0].long_name,
+        //   rua:addressComponent[1].long_name,
+        //   bairro: addressComponent[2].long_name,
+        //   cidade:  addressComponent[3].long_name,
+        //   estado: addressComponent[4].long_name,
+        //   cep: addressComponent[6] ? addressComponent[6].long_name : null
+        // })
         setOptions(newValue ? [newValue, ...options] : options);
         setValue(newValue);
       }}
