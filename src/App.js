@@ -1,4 +1,4 @@
-import React,{useState} from "react"
+import React,{useState,useEffect} from "react"
 import axios from 'axios'
 import { TextField,MenuItem } from '@material-ui/core';
 import AutoComplete from './components/AutoComplete';
@@ -6,21 +6,28 @@ import {
   withGoogleMap,
   GoogleMap,
   Marker,
+  InfoWindow,
 } from "react-google-maps"
+import {  FaMapMarkerAlt } from 'react-icons/fa';
+
+// import {FaMapMarker} from 'react-icons/fa'
 import './styles.css'
 import { makeStyles } from '@material-ui/core/styles';
 const useStyles = makeStyles((theme) => ({
   inputs: {
     margin: '10px 0',
     height: '50px',
-    width: '100%'
+    width: '100%',
+    borderRadius: '15px'
   },
   inputs2:{
     width: '35%',
+    borderRadius: '15px'
   },
   inputs1:{
     height: '50px',
     width: '60%',
+    borderRadius: '15px'
   }
 }));
 
@@ -38,6 +45,7 @@ export default function App() {
     lat: -20.4997288,
     lng: -54.6441306
   });
+  const [formattedAddress,setFormattedAddress] = useState('')
   const [currency, setCurrency] = React.useState('Selecione');
   const [complementos, setComplementos] = useState({
     numero: null,
@@ -48,6 +56,7 @@ export default function App() {
     cep: null
   });
   const [cpf, setCpf] = useState('')
+  const  [isOpen,setIsOpen] = useState(true)
   const API_KEY = 'AIzaSyDnbHQ_2Q9POiAFe6k6D0iW3XiNicNNvdE'
 
   function cpfMask(value){
@@ -73,6 +82,7 @@ export default function App() {
 
     axios.get(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${API_KEY}`)
          .then((res)=>{
+          setFormattedAddress(res.data.results[0].formatted_address)
           const arrayResults = res.data.results[0].address_components
           setComplementos({
             numero: arrayResults[0].long_name,
@@ -84,7 +94,17 @@ export default function App() {
           })
     })
   }
-
+  function handleOpen(){
+    setIsOpen(false)
+  }
+  useEffect(() => {
+    if(formattedAddress === ''){
+      setIsOpen(false)
+    }
+    else{
+      setIsOpen(true)
+    }
+  },[formattedAddress])
   const MapWithAMarker = withGoogleMap(props =>
     <GoogleMap 
         defaultOptions={{ 
@@ -98,13 +118,30 @@ export default function App() {
       defaultZoom={17}
         defaultCenter={{ lat:coordinates.lat, lng: coordinates.lng }}
     >
-      <Marker
+    <Marker
         draggable={true}
+        // onDragStart={()=>{
+        //   setIsOpen(false)
+        // }}
         onDragEnd={handleDragCoords}
         position={coordinates}
-      />
+        // onClick={()=>{
+        //   setIsOpen(true)
+        // }}
+    />
+    {/* { isOpen &&
+      <InfoWindow 
+        position={coordinates}
+        onCloseClick={handleOpen}>
+        <span>{formattedAddress}</span>
+      </InfoWindow>
+    } */}
+
     </GoogleMap>
   );
+  const styleMAp = {
+
+  }
   return (
     <div className="conteudo-center">
           <h1>CADASTRO GESTOR FOOD</h1>   
@@ -126,7 +163,7 @@ export default function App() {
                   variant="outlined"
                 >
                   {currencies.map((option) => (
-                    <MenuItem key={option.value} value={option.value}>
+                    <MenuItem key={option.value} value={option.value}>                   
                       {option.value}
                     </MenuItem>
                   ))}
@@ -135,24 +172,26 @@ export default function App() {
              
               <TextField className={classes.inputs}id="outlined-basic" label="CPF" onChange={handleChange} value={cpf}variant="outlined" />
               <TextField className={classes.inputs} id="outlined-basic" type="Email" label="E-Mail" variant="outlined" />
-              <div className="data-sexo">
-                <TextField className={classes.inputs1} id="outlined-basic" type="text" label="Rua" value={complementos.rua === null ?  '' : complementos.rua  } variant="outlined" />
-                <TextField className={classes.inputs2} id="outlined-basic" type="text" label="Número" value={complementos.numero === null ?  '' : complementos.numero  } variant="outlined" />
-              </div>
-              <TextField className={classes.inputs} id="outlined-basic" type="text" label="Bairro" value={complementos.bairro === null ?  null : complementos.bairro  } variant="outlined" />
-             
               <AutoComplete
+                setFormattedAddress={setFormattedAddress}
                 setComplementos={setComplementos}
                 setCoordinates={setCoordinates}
               />
             </form> 
+          </div>
+          { isOpen && 
+            <div className="AddressFormated" >
+              <FaMapMarkerAlt size={20} color="red" style={{marginRight: '5px'}}/>
+              <h1>{formattedAddress}</h1> 
             </div>
+          } 
             <MapWithAMarker
-              containerElement={
-                <div style={{ position: 'relative', height: `400px` }} />
+              containerElement={ 
+                
+                <div style={{  height: `400px`, borderRadius: '20%' }} />
               }
               mapElement={
-                <div style={{   height: `100%`, width: '100%' }} />
+                <div style={{   height: `100%`, width: '100%', borderRadius: '15px',  boxShadow: '9px 9px 5px 0px rgba(44, 50, 50, 0.14)'  }} />
               }
             />
     </div>

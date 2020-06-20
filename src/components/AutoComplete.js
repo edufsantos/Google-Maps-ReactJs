@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-export default function GoogleMaps({setCoordinates, setComplementos}) {
+export default function GoogleMaps({setCoordinates, setComplementos,setFormattedAddress }) {
   const classes = useStyles();
   const [value, setValue] = React.useState(null);
   const [inputValue, setInputValue] = React.useState('');
@@ -68,6 +68,7 @@ export default function GoogleMaps({setCoordinates, setComplementos}) {
     return () => {
       active = false;
     };
+    
   }, [value, inputValue, fetch]);
 
   return (
@@ -85,6 +86,7 @@ export default function GoogleMaps({setCoordinates, setComplementos}) {
         const latLng = await getLatLng(value[0])
         await setCoordinates(latLng)
         const addressComponent = value[0].address_components;
+        setFormattedAddress(newValue ? newValue.description : '');
         setComplementos({
           numero: addressComponent[0].long_name,
           rua:addressComponent[1].long_name,
@@ -104,7 +106,6 @@ export default function GoogleMaps({setCoordinates, setComplementos}) {
       )}
       renderOption={(option) => {
         const matches = option.structured_formatting.main_text_matched_substrings;
-
         const parts = parse(
           option.structured_formatting.main_text,
           matches.map((match) => [match.offset, match.offset + match.length]),

@@ -24,10 +24,29 @@
     width: 100%;
     border: 1px solid #999;
     border-radius: 4px;
-    font-size: 15 px;
+    font-size: 15px;
 }
 .data-sexo{
   margin-top: 10px;
   display: flex;
   justify-content: space-between;
+}
+.AddressFormated{
+  height: 50px; 
+  box-sizing: border-box;
+  padding: 0 20px;
+  -webkit-box-shadow: 9px 9px 5px 0px rgba(44, 50, 50, 0.14);
+  -moz-box-shadow:    9px 9px 5px 0px rgba(44, 50, 50, 0.14);
+  box-shadow:         9px 9px 5px 0px rgba(44, 50, 50, 0.14);
+  margin: 0 auto;
+  width: max-content;
+  border-radius: 15px;
+  margin-bottom: 20px;
+  color: #333;
+  display: flex;
+  align-items: center;
+  justify-content: baseline;
+}
+.AddressFormated h1{
+  font-size: 20px;
 }
