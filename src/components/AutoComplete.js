@@ -8,8 +8,9 @@ import { makeStyles } from '@material-ui/core/styles';
 import parse from 'autosuggest-highlight/parse';
 import throttle from 'lodash/throttle';
 import  { getLatLng, geocodeByAddress} from "react-places-autocomplete";
-
+import axios from 'axios'
 const autocompleteService = { current: null };
+const API_KEY = 'AIzaSyDnbHQ_2Q9POiAFe6k6D0iW3XiNicNNvdE'
 
 const useStyles = makeStyles((theme) => ({
   icon: {
@@ -82,19 +83,63 @@ export default function GoogleMaps({setCoordinates, setComplementos,setFormatted
       filterSelectedOptions
       value={value}
       onChange={ async (event, newValue) => {
-        const value = await geocodeByAddress(newValue ? newValue.description : '')
+        const value = await geocodeByAddress(newValue ? newValue.description : '');
         const latLng = await getLatLng(value[0])
         await setCoordinates(latLng)
-        const addressComponent = value[0].address_components;
-        setFormattedAddress(newValue ? newValue.description : '');
-        setComplementos({
-          numero: addressComponent[0].long_name,
-          rua:addressComponent[1].long_name,
-          bairro: addressComponent[2].long_name,
-          cidade:  addressComponent[3].long_name,
-          estado: addressComponent[4].long_name,
-          cep: addressComponent[6] ? addressComponent[6].long_name : null
+        const lat = latLng.lat,
+              lng = latLng.lng
+        axios.get(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${API_KEY}`)
+         .then((res)=>{
+          console.log(res)
+          setFormattedAddress(res.data.results[0].formatted_address)
+          const arrayResults = res.data.results[0].address_components
+          setComplementos({
+            numero: arrayResults[0].long_name,
+            rua:arrayResults[1].long_name,
+            bairro: arrayResults[2].long_name,
+            cidade:  arrayResults[3].long_name,
+            estado: arrayResults[4].long_name,
+            cep: arrayResults[6] ? arrayResults[6].long_name : null
+          })
         })
+        
+
+
+        // const addressComponent = value[0].address_components;
+        setFormattedAddress(newValue ? newValue.description : '');
+        
+        // if(addressComponent.length === 7 ){
+        //   console.log('7')
+        //   setComplementos({
+        //     numero: addressComponent[0].long_name,
+        //     rua:addressComponent[1].long_name,
+        //     bairro: addressComponent[2].long_name,
+        //     cidade:  addressComponent[3].long_name,
+        //     estado: addressComponent[4].long_name,
+        //     cep: addressComponent[6] ? addressComponent[6].long_name : null
+        //   })
+        // }
+        // else if(addressComponent.length === 6 ){
+        //   console.log('6')
+        //   setComplementos({
+        //     numero: null,
+        //     rua: addressComponent[0].long_name,
+        //     bairro: addressComponent[1].long_name,
+        //     cidade:  addressComponent[2].long_name,
+        //     estado: addressComponent[3].long_name,
+        //     cep: addressComponent[5] ? addressComponent[5].long_name : null
+        //   })
+        // }else {
+        //   console.log('4')
+
+        //   setComplementos({
+        //     numero: null,
+        //     bairro: addressComponent[0].long_name,
+        //     cidade:  addressComponent[1].long_name,
+        //     estado: addressComponent[2].long_name,
+        //   })
+        // }
+        
         setOptions(newValue ? [newValue, ...options] : options);
         setValue(newValue);
       }}

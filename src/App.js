@@ -54,6 +54,7 @@ export default function App() {
     cep: null
   });
   const Endereços = `${complementos.rua}-${complementos.cep}, ${complementos.numero} - ${complementos.bairro}, ${complementos.cidade} - ${complementos.estado}`
+  
   const [cpf, setCpf] = useState('')
   const  [isOpen,setIsOpen] = useState(true)
   const API_KEY = 'AIzaSyDnbHQ_2Q9POiAFe6k6D0iW3XiNicNNvdE'
@@ -66,7 +67,7 @@ export default function App() {
       .replace(/(\d{3})(\d{1,2})/, '$1-$2')
       .replace(/(-\d{2})\d+?$/, '$1') // captura 2 numeros seguidos de um traço e não deixa ser digitado mais nada
   }
-  function handleChange(e){
+  function handleChangeCpf(e){
       e.preventDefault();
       setCpf(cpfMask(e.target.value))
   }
@@ -82,7 +83,6 @@ export default function App() {
 
     axios.get(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${API_KEY}`)
          .then((res)=>{
-          console.log(res)
           setFormattedAddress(res.data.results[0].formatted_address)
           const arrayResults = res.data.results[0].address_components
           setComplementos({
@@ -95,47 +95,37 @@ export default function App() {
           })
     })
   }
-  // function handleOpen(){
-  //   setIsOpen(false)
-  // }
+  const MapWithAMarker = React.useCallback( withGoogleMap(props => 
+      <GoogleMap 
+          defaultOptions={{ 
+            mapTypeControl: false,
+            zoomControl: true,
+            draggableCursor: 'default',
+            draggingCursor: 'move',
+            scrollwheel: false,
+            streetViewControl: false,
+          }}
+        defaultZoom={18}
+        defaultCenter={coordinates}
+      >
+        <Marker
+            draggable={true}
+            onDragEnd={handleDragCoords}
+            position={coordinates}
+        />
+      </GoogleMap>
+  ),[coordinates])
   useEffect(() => {
     if(formattedAddress === ''){
       setIsOpen(false)
+      console.log(isOpen)
     }
     else{
       setIsOpen(true)
     }
-  },[formattedAddress]);
-
-  const MapWithAMarker = withGoogleMap(props =>
-    
-    <GoogleMap 
-        defaultOptions={{ 
-          mapTypeControl: false,
-          zoomControl: true,
-          draggableCursor: 'default',
-          draggingCursor: 'move',
-          scrollwheel: false,
-          streetViewControl: false,
-        }}
-      defaultZoom={19}
-      defaultCenter={{ lat:coordinates.lat, lng: coordinates.lng }}
-    >
-    <Marker
-        draggable={true}
-        onDragEnd={handleDragCoords}
-        position={coordinates}
-    />
-    {/* { isOpen &&
-      <InfoWindow 
-        position={coordinates}
-        onCloseClick={handleOpen}>
-        <span>{formattedAddress}</span>
-      </InfoWindow>
-    } */}
-
-    </GoogleMap>
-  );
+  },[formattedAddress, isOpen]);
+  
+  
   function handleSubmitForm(e){
     console.log('entrous')
   }
@@ -146,7 +136,7 @@ export default function App() {
             <form action={handleSubmitForm}>
               <TextField className={classes.inputs} id="outlined-basic" label="Nome" variant="outlined" />
               <div className="data-sexo">
-                <TextField className={classes.inputs1} type="date" id="outlined-date" defaultValue="00/00/0000" variant="outlined" />
+                <TextField className={classes.inputs1} type="date" id="outlined-date"  variant="outlined" />
                 <TextField
                   className={classes.inputs2} 
                   id="outlined-select-currency"
@@ -154,7 +144,6 @@ export default function App() {
                   label="selecione"
                   value={currency}
                   onChange={(e) => {
-                    e.preventDefault();
                     setCurrency(e.target.value);
                   }}
                   variant="outlined"
@@ -167,7 +156,7 @@ export default function App() {
                 </TextField>
               </div>
              
-              <TextField className={classes.inputs}id="outlined-basic" label="CPF" onChange={handleChange} value={cpf}variant="outlined" />
+              <TextField className={classes.inputs} id="outlined-basic" label="CPF" onChange={handleChangeCpf} value={cpf} variant="outlined" />
               <TextField className={classes.inputs} id="outlined-basic" type="Email" label="E-Mail" variant="outlined" />
               <AutoComplete
                 setFormattedAddress={setFormattedAddress}
