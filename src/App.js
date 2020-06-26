@@ -39,6 +39,7 @@ export default function App() {
       value: 'Feminino',
     },
   ];
+  const [initialPosition, setInitialPOsition] = useState({})
   const [coordinates, setCoordinates] = useState({
     lat: null,
     lng: null
@@ -124,7 +125,53 @@ export default function App() {
       setIsOpen(true)
     }
   },[formattedAddress, isOpen]);
+
+
+   navigator.geolocation.getCurrentPosition((position) => {
+      const pos = {
+        lat: position.coords.latitude,
+        lng: position.coords.longitude
+      }
+      setInitialPOsition(pos)
+    });
   
+ 
+
+  function handleMatrixDistance(){
+   
+
+    var origin1 = new window.google.maps.LatLng(initialPosition.lat,initialPosition.lng);
+    var destinationB = new window.google.maps.LatLng(coordinates.lat, coordinates.lng);
+
+    var service = new window.google.maps.DistanceMatrixService();
+
+    service.getDistanceMatrix(
+      {
+        origins: [origin1],
+        destinations:  [destinationB],
+        travelMode: 'DRIVING',
+        unitSystem: window.google.maps.UnitSystem.METRIC,
+        avoidTolls: false,
+        avoidHighways: false
+      }, callback);
+
+      function callback(response, status) {
+        console.log('callback',response)
+        const {distance, duration} = response.rows[0].elements[0] ;
+        console.log('distancia', distance);
+        console.log('duration', duration)
+
+        if(distance.value <= 100 ){
+          console.log('Estou no local ')
+        }
+        else{
+          console.log('não estou no local')
+        }
+
+        // See Parsing the Results for
+        // the basics of a callback function.
+      }
+  } 
   
   function handleSubmitForm(e){
     console.log('entrous')
@@ -179,6 +226,7 @@ export default function App() {
                 <div style={{   height: `100%`, width: '100%', borderRadius: '15px',  boxShadow: '9px 9px 5px 0px rgba(44, 50, 50, 0.14)'  }} />
               }
             />
+            <button onClick={handleMatrixDistance}>ver distancia</button>
     </div>
   );
 }
